@@ -36,10 +36,10 @@ FunctionCommand fcoms[] = {
 
 // an array of variable commands
 // same as above, doesn't have to be an array but this is easier.
-VariableCommand vcoms[] = {
-  { 'I', i },
-  { 'J', j },
-  { 'K', k }
+VariableCommand<int> vcoms[] = {
+  {'I', i},
+  {'J', j},
+  {'K', k}
 };
 
 // create a StreamHandler and connect to Serial

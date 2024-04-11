@@ -14,7 +14,8 @@ void Command::check(char* str) {
 }
 
 // parses an integer from the string
-int VariableCommand::parse(char* str) {
+template<>
+int VariableCommand<int>::parse(char* str) {
   return atoi(str + 1);  // skip command character
 }
 

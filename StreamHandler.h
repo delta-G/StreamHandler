@@ -23,7 +23,7 @@ private:
   }
   Command();  // disallow default constructor
 protected:
-  virtual void handle(char* str){};
+  virtual void handle(char* str){(void)str;};
   Command(char c)
     : matchChar(c) {
     next = first;
@@ -51,7 +51,7 @@ public:
 *    Commands that call a function
 *    function must take a char* and return void
 */
-class FunctionCommand : protected Command {
+class FunctionCommand : public Command {
 private:
 
   void (*func)(char*);
@@ -72,15 +72,17 @@ public:
 
 /*
 *
-*    Class for updating int variables
+*    Class for updating variables
 *
 */
-class VariableCommand : protected Command {
+
+template <class T>
+class VariableCommand : public Command {
 private:
 
-  int& var;
+  T& var;
   VariableCommand();  // disallow default constructor
-  int parse(char*);
+  T parse(char*);
 
 protected:
 
@@ -90,9 +92,10 @@ protected:
 
 public:
 
-  VariableCommand(char c, int& v)
+  VariableCommand(char c, T& v)
     : Command(c), var(v){};
 };
+
 
 /*
 *
