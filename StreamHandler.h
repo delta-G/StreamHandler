@@ -13,9 +13,9 @@
 *
 */
 class Command {
+  friend class StreamHandler;
 private:
   const char matchChar;
-  static Command* first;
   Command* next = nullptr;
 
   boolean match(const char* com) {
@@ -27,25 +27,13 @@ protected:
     (void)str;
   };
   Command(char c)
-    : matchChar(c) {
-    next = first;
-    first = this;
-  }
+    : matchChar(c) {}
 
 public:
 
   Command(const Command& other) = delete;
   Command& operator=(const Command& other) = delete;
-  ~Command() {
-    for (Command** pptr = &first; *pptr != nullptr; pptr = &((*pptr)->next)) {
-      if (*pptr == this) {
-        *pptr = next;
-        break;
-      }
-    }
-  }
-
-  static void check(char* str);
+  ~Command() {}
 };
 
 /*
@@ -79,11 +67,11 @@ public:
 */
 
 template<class T>
-class VariableCommand : public Command {
+class VariableUpdater : public Command {
 private:
 
   T& var;
-  VariableCommand();  // disallow default constructor
+  VariableUpdater();  // disallow default constructor
   T parse(char*);
 
 protected:
@@ -94,7 +82,7 @@ protected:
 
 public:
 
-  VariableCommand(char c, T& v)
+  VariableUpdater(char c, T& v)
     : Command(c), var(v){};
 };
 
@@ -109,7 +97,7 @@ class StreamHandler {
 
 private:
 
-  char _SPbuffer[STREAM_HANDLER_BUFFER_SIZE];
+  char _SHbuffer[STREAM_HANDLER_BUFFER_SIZE];
   int index;
 
   Stream* in;
@@ -121,6 +109,8 @@ private:
 
   void handleChar(char c);
 
+  Command* first;
+
 public:
 
   StreamHandler(Stream* aIn, char aSop, char aEop)
@@ -131,6 +121,9 @@ public:
 
   void setGreedy(bool);
   bool getGreedy();
+
+  void addCommand(Command* com);
+  void checkCommands();
 };
 
 
