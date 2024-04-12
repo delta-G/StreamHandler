@@ -47,7 +47,7 @@ void eFunction(char* str) {
   Serial.println(n);
 }
 
-
+// test String   <A_Hello><I42><A><D><M3.141592><D><E><N127><E>
 // create a StreamHandler and connect to Serial
 StreamHandler streamHandler(&Serial);
 
@@ -56,18 +56,18 @@ void setup() {
   delay(1000);
   Serial.println("\n\n**** Starting StreamHandler.ino **** \n\n");
   // add commands
-  streamHandler.addCommand(new FunctionCommand('A', aFunction));
-  streamHandler.addCommand(new FunctionCommand('B', bFunction));
-  streamHandler.addCommand(new FunctionCommand('C', cFunction));
-  streamHandler.addCommand(new FunctionCommand('D', dFunction));
-  streamHandler.addCommand(new FunctionCommand('E', eFunction));
+  streamHandler.addFunctionCommand('A', aFunction);
+  streamHandler.addFunctionCommand('B', bFunction);
+  streamHandler.addFunctionCommand('C', cFunction);
+  streamHandler.addFunctionCommand('D', dFunction);
+  streamHandler.addFunctionCommand('E', eFunction);
 
-  streamHandler.addCommand(new VariableUpdater<int>('I', i));
-  streamHandler.addCommand(new VariableUpdater<int>('J', j));
-  streamHandler.addCommand(new VariableUpdater<int>('K', k));
+  streamHandler.addVariableUpdater('I', i);
+  streamHandler.addVariableUpdater('J', j);
+  streamHandler.addVariableUpdater('K', k);
 
-  streamHandler.addCommand(new VariableUpdater<float>('M', m));
-  streamHandler.addCommand(new VariableUpdater<uint8_t>('N', n));
+  streamHandler.addVariableUpdater('M', m);
+  streamHandler.addVariableUpdater('N', n);
 }
 
 void loop() {

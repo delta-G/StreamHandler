@@ -59,18 +59,35 @@ bool StreamHandler::getGreedy() {
   return greedy;
 }
 
-void StreamHandler::addCommand(Command* com){
-  com->next = first;
-  first = com;
+void StreamHandler::addCommand(Command* com) {
+  if (!commandExists(com->matchChar)) {
+    com->next = first;
+    first = com;
+  }
 }
 
-void StreamHandler::checkCommands(){
+void StreamHandler::addFunctionCommand(char c, void (*f)(char*)) {
+  if (!commandExists(c)) {
+    FunctionCommand* command = new FunctionCommand(c, f);
+    addCommand(command);
+  }
+}
+
+boolean StreamHandler::commandExists(char c) {
   for (Command* ptr = first; ptr != nullptr; ptr = ptr->next) {
-    // Start markers should be stripped.
-    if (ptr->match(_SHbuffer)) {
+    if (ptr->match(c)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void StreamHandler::checkCommands() {
+  for (Command* ptr = first; ptr != nullptr; ptr = ptr->next) {
+    // Start markers should be stripped.  Command char should be first element
+    if (ptr->match(*_SHbuffer)) {
       ptr->handle(_SHbuffer);
       break;
     }
   }
-  
 }

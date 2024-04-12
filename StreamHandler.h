@@ -18,8 +18,8 @@ private:
   const char matchChar;
   Command* next = nullptr;
 
-  boolean match(const char* com) {
-    return ((*com == matchChar));
+  boolean match(char com) {
+    return ((com == matchChar));
   }
   Command();  // disallow default constructor
 protected:
@@ -122,9 +122,21 @@ public:
   void setGreedy(bool);
   bool getGreedy();
 
-  void addCommand(Command* com);
+  void addCommand(Command*);
+  void addFunctionCommand(char, void (*)(char*));
+  template<class T>
+  void addVariableUpdater(char, T&);
+  boolean commandExists(char);
   void checkCommands();
 };
+
+template<class T>
+void StreamHandler::addVariableUpdater(char c, T& v) {
+  if (!commandExists(c)) {
+    VariableUpdater<T>* updater = new VariableUpdater<T>(c, v);
+    addCommand(updater);
+  }
+}
 
 
 
