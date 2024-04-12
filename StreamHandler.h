@@ -14,16 +14,18 @@
 */
 class Command {
 private:
-  char matchChar;
+  const char matchChar;
   static Command* first;
   Command* next = nullptr;
 
-  boolean match(char* com) {
+  boolean match(const char* com) {
     return ((*com == matchChar));
   }
   Command();  // disallow default constructor
 protected:
-  virtual void handle(char* str){(void)str;};
+  virtual void handle(char* str) {
+    (void)str;
+  };
   Command(char c)
     : matchChar(c) {
     next = first;
@@ -76,7 +78,7 @@ public:
 *
 */
 
-template <class T>
+template<class T>
 class VariableCommand : public Command {
 private:
 

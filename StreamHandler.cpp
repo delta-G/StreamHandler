@@ -18,6 +18,11 @@ template<>
 int VariableCommand<int>::parse(char* str) {
   return atoi(str + 1);  // skip command character
 }
+// parses an double from the string
+template<>
+float VariableCommand<float>::parse(char* str) {
+  return atof(str + 1);  // skip command character
+}
 
 /*
 *
@@ -38,7 +43,7 @@ void StreamHandler::run() {
   }
 }
 
-void StreamHandler::handleChar(char c) {
+void StreamHandler::handleChar(const char c) {
 
   if (c == sop) {
     receiving = true;
