@@ -18,11 +18,10 @@ float m = 2.2;
 uint8_t n = 6;
 
 //define some functions to print them
-void aFunction(char* str) {
+void aFunction(char* str, char* ret) {
   Serial.print("\n ** A function - ");
   Serial.println(str);
-  Serial.print(" - prints i - ");
-  Serial.println(i);
+  snprintf(ret, STREAM_HANDLER_BUFFER_SIZE, "matched 'A' printed i %d", i);
 }
 void bFunction(char* str, char* ret) {
   Serial.print("\n ** B function - ");
@@ -59,8 +58,7 @@ void setup() {
   delay(1000);
   Serial.println("\n\n**** Starting StreamHandler.ino **** \n\n");
   // add commands
-  streamHandler.addFunctionCommand('A', aFunction);
-
+  streamHandler.addReturnCommand('A', aFunction);   
   streamHandler.addReturnCommand('B', bFunction);
 
   streamHandler.addFunctionCommand('C', cFunction);
@@ -68,7 +66,7 @@ void setup() {
   streamHandler.addFunctionCommand('E', eFunction);
 
   streamHandler.addVariableUpdater('I', i);
-  streamHandler.addVariableUpdater('J', j);
+  streamHandler.addVariableUpdater('J', j, false);  // doesn't send return back
   streamHandler.addVariableUpdater('K', k);
 
   streamHandler.addVariableUpdater('M', m);

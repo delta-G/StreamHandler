@@ -108,8 +108,8 @@ void StreamHandler::checkCommands() {
       ptr->handle(inBuffer, outBuffer);
       if (out && strlen(outBuffer) > 0) {
         out->write(outBuffer, strlen(outBuffer));
-        outBuffer[0] = 0;
       }
+      outBuffer[0] = 0;
       break;
     }
   }

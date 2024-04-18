@@ -15,6 +15,10 @@
 #define DEFAULT_EOP '>'
 #endif
 
+#ifndef DEFAULT_VU_ECHO
+#define DEFAULT_VU_ECHO true
+#endif
+
 typedef void (*ComFuncPtr)(char*);
 typedef void (*RetFuncPtr)(char*, char*);
 
@@ -107,18 +111,23 @@ private:
   VariableUpdater();  // disallow default constructor
   T parse(char*);
   void display(char*);
+  bool echo;
 
 protected:
 
   virtual void handle(char* str, char* ret) {
     var = parse(str);
-    display(ret);
+    if (echo) {
+      display(ret);
+    }
   }
 
 public:
 
+  VariableUpdater(char c, T& v, bool e)
+    : Command(c), var(v), echo(e){};
   VariableUpdater(char c, T& v)
-    : Command(c), var(v){};
+    : VariableUpdater(c, v, DEFAULT_VU_ECHO){};
 };
 
 
@@ -167,15 +176,15 @@ public:
   void addFunctionCommand(char, ComFuncPtr);
   void addReturnCommand(char, RetFuncPtr);
   template<class T>
-  void addVariableUpdater(char, T&);
+  void addVariableUpdater(char, T&, bool = true);
   boolean commandExists(char);
   void checkCommands();
 };
 
 template<class T>
-void StreamHandler::addVariableUpdater(char c, T& v) {
+void StreamHandler::addVariableUpdater(char c, T& v, bool e) {
   if (!commandExists(c)) {
-    VariableUpdater<T>* updater = new VariableUpdater<T>(c, v);
+    VariableUpdater<T>* updater = new VariableUpdater<T>(c, v, e);
     addCommand(updater);
   }
 }
