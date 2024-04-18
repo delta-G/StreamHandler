@@ -158,10 +158,9 @@ private:
   void (*defaultHandler)(char*, char*) = nullptr;
 
   Command* first;
-  
+
   boolean commandExists(char);
   void checkCommands();
-
   void sendOutBuffer();
 
 public:
