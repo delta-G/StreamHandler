@@ -7,6 +7,8 @@
 #define STREAM_HANDLER_BUFFER_SIZE 64
 #endif
 
+typedef void (*ComFuncPtr)(char*);
+
 /*
 *
 *    Base class for commands
@@ -44,7 +46,7 @@ public:
 class FunctionCommand : public Command {
 private:
 
-  void (*func)(char*);
+  ComFuncPtr func;
   FunctionCommand();  // disallow default constructor
 
 protected:
@@ -55,7 +57,7 @@ protected:
 
 public:
 
-  FunctionCommand(char c, void (*f)(char*))
+  FunctionCommand(char c, ComFuncPtr f)
     : Command(c), func(f){};
 };
 
@@ -123,7 +125,7 @@ public:
   bool getGreedy();
 
   void addCommand(Command*);
-  void addFunctionCommand(char, void (*)(char*));
+  void addFunctionCommand(char, ComFuncPtr);
   template<class T>
   void addVariableUpdater(char, T&);
   boolean commandExists(char);

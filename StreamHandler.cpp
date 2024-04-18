@@ -66,7 +66,7 @@ void StreamHandler::addCommand(Command* com) {
   }
 }
 
-void StreamHandler::addFunctionCommand(char c, void (*f)(char*)) {
+void StreamHandler::addFunctionCommand(char c, ComFuncPtr f) {
   if (!commandExists(c)) {
     FunctionCommand* command = new FunctionCommand(c, f);
     addCommand(command);
