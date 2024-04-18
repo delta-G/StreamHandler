@@ -71,6 +71,10 @@ bool StreamHandler::getGreedy() {
   return greedy;
 }
 
+void StreamHandler::setDefaultHandler(void (*h)(char*, char*)) {
+  defaultHandler = h;
+}
+
 void StreamHandler::addCommand(Command* com) {
   if (!commandExists(com->matchChar)) {
     com->next = first;
@@ -102,15 +106,25 @@ boolean StreamHandler::commandExists(char c) {
 }
 
 void StreamHandler::checkCommands() {
+  bool found = false;
   for (Command* ptr = first; ptr != nullptr; ptr = ptr->next) {
     // Start markers should be stripped.  Command char should be first element
     if (ptr->match(*inBuffer)) {
+      found = true;
       ptr->handle(inBuffer, outBuffer);
-      if (out && strlen(outBuffer) > 0) {
-        out->write(outBuffer, strlen(outBuffer));
-      }
-      outBuffer[0] = 0;
+      sendOutBuffer();
       break;
     }
   }
+  if (defaultHandler && !found) {
+    defaultHandler(inBuffer, outBuffer);
+    sendOutBuffer();
+  }
+}
+
+void StreamHandler::sendOutBuffer() {
+  if (out && strlen(outBuffer) > 0) {
+    out->write(outBuffer, strlen(outBuffer));
+  }
+  outBuffer[0] = 0;
 }

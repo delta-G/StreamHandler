@@ -49,6 +49,11 @@ void eFunction(char* str) {
   Serial.println(n);
 }
 
+void def(char* str, char* ret) {
+  strncpy(ret, "Default Handler", STREAM_HANDLER_BUFFER_SIZE);
+  Serial.println(str);
+}
+
 // test String   <A_Hello><I42><A><D><M3.141592><D><E><N127><E>
 // create a StreamHandler and connect to Serial
 StreamHandler streamHandler(&Serial, &Serial);
@@ -71,6 +76,8 @@ void setup() {
 
   streamHandler.addVariableUpdater('M', m);
   streamHandler.addVariableUpdater('N', n);
+
+  streamHandler.setDefaultHandler(def);
 }
 
 void loop() {

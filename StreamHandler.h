@@ -155,7 +155,14 @@ private:
 
   void handleChar(char c);
 
+  void (*defaultHandler)(char*, char*) = nullptr;
+
   Command* first;
+  
+  boolean commandExists(char);
+  void checkCommands();
+
+  void sendOutBuffer();
 
 public:
   StreamHandler(Stream* aIn, Stream* aOut, char aSop, char aEop)
@@ -172,13 +179,13 @@ public:
   void setGreedy(bool);
   bool getGreedy();
 
+  void setDefaultHandler(void(*)(char*, char*));
+
   void addCommand(Command*);
   void addFunctionCommand(char, ComFuncPtr);
   void addReturnCommand(char, RetFuncPtr);
   template<class T>
   void addVariableUpdater(char, T&, bool = true);
-  boolean commandExists(char);
-  void checkCommands();
 };
 
 template<class T>
