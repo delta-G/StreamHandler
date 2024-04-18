@@ -12,6 +12,18 @@ float VariableUpdater<float>::parse(char* str) {
   return atof(str + 1);  // skip command character
 }
 
+template<>
+void VariableUpdater<int>::display(char* ret) {
+  snprintf(ret, STREAM_HANDLER_BUFFER_SIZE, "<%c%d>", matchChar, var);
+}
+
+template<>
+void VariableUpdater<float>::display(char* ret) {
+  char buf[16];
+  dtostrf(var, 2, 2, buf);
+  snprintf(ret, STREAM_HANDLER_BUFFER_SIZE, "<%c%s>", matchChar, buf);
+}
+
 /*
 *
 *    StreamHandler methods
@@ -36,14 +48,14 @@ void StreamHandler::handleChar(const char c) {
   if (c == sop) {
     receiving = true;
     index = 0;
-    _SHbuffer[0] = 0;
+    inBuffer[0] = 0;
   } else if (receiving) {
     if (c == eop) {
       receiving = false;
       checkCommands();
     }
-    _SHbuffer[index] = c;
-    _SHbuffer[++index] = 0;
+    inBuffer[index] = c;
+    inBuffer[++index] = 0;
 
     if (index >= STREAM_HANDLER_BUFFER_SIZE - 1) {
       index--;
@@ -73,6 +85,13 @@ void StreamHandler::addFunctionCommand(char c, ComFuncPtr f) {
   }
 }
 
+void StreamHandler::addReturnCommand(char c, RetFuncPtr f) {
+  if (!commandExists(c)) {
+    ReturnCommand* command = new ReturnCommand(c, f);
+    addCommand(command);
+  }
+}
+
 boolean StreamHandler::commandExists(char c) {
   for (Command* ptr = first; ptr != nullptr; ptr = ptr->next) {
     if (ptr->match(c)) {
@@ -85,8 +104,12 @@ boolean StreamHandler::commandExists(char c) {
 void StreamHandler::checkCommands() {
   for (Command* ptr = first; ptr != nullptr; ptr = ptr->next) {
     // Start markers should be stripped.  Command char should be first element
-    if (ptr->match(*_SHbuffer)) {
-      ptr->handle(_SHbuffer);
+    if (ptr->match(*inBuffer)) {
+      ptr->handle(inBuffer, outBuffer);
+      if (out && strlen(outBuffer) > 0) {
+        out->write(outBuffer, strlen(outBuffer));
+        outBuffer[0] = 0;
+      }
       break;
     }
   }

@@ -7,7 +7,16 @@
 #define STREAM_HANDLER_BUFFER_SIZE 64
 #endif
 
+#ifndef DEFAULT_SOP
+#define DEFAULT_SOP '<'
+#endif
+
+#ifndef DEFAULT_EOP
+#define DEFAULT_EOP '>'
+#endif
+
 typedef void (*ComFuncPtr)(char*);
+typedef void (*RetFuncPtr)(char*, char*);
 
 /*
 *
@@ -17,7 +26,6 @@ typedef void (*ComFuncPtr)(char*);
 class Command {
   friend class StreamHandler;
 private:
-  const char matchChar;
   Command* next = nullptr;
 
   boolean match(char com) {
@@ -25,9 +33,8 @@ private:
   }
   Command();  // disallow default constructor
 protected:
-  virtual void handle(char* str) {
-    (void)str;
-  };
+  const char matchChar;
+  virtual void handle(char* str, char* ret) = 0;
   Command(char c)
     : matchChar(c) {}
 
@@ -51,7 +58,8 @@ private:
 
 protected:
 
-  virtual void handle(char* str) {
+  virtual void handle(char* str, char* ret) {
+    (void)ret;
     if (func) func(str);
   };
 
@@ -61,6 +69,29 @@ public:
     : Command(c), func(f){};
 };
 
+/*
+*
+*    Commands that call a function and send back a return
+*    function must take a char* for the command and a char* to put the return in
+*    and return void
+*/
+class ReturnCommand : public Command {
+private:
+
+  RetFuncPtr func;
+  ReturnCommand();  // disallow default constructor
+
+protected:
+
+  virtual void handle(char* str, char* ret) {
+    if (func) func(str, ret);
+  };
+
+public:
+
+  ReturnCommand(char c, RetFuncPtr f)
+    : Command(c), func(f){};
+};
 
 /*
 *
@@ -75,11 +106,13 @@ private:
   T& var;
   VariableUpdater();  // disallow default constructor
   T parse(char*);
+  void display(char*);
 
 protected:
 
-  virtual void handle(char* str) {
+  virtual void handle(char* str, char* ret) {
     var = parse(str);
+    display(ret);
   }
 
 public:
@@ -99,10 +132,12 @@ class StreamHandler {
 
 private:
 
-  char _SHbuffer[STREAM_HANDLER_BUFFER_SIZE];
+  char inBuffer[STREAM_HANDLER_BUFFER_SIZE];
+  char outBuffer[STREAM_HANDLER_BUFFER_SIZE];
   int index;
 
   Stream* in;
+  Stream* out;
   char sop;
   char eop;
 
@@ -114,11 +149,15 @@ private:
   Command* first;
 
 public:
-
+  StreamHandler(Stream* aIn, Stream* aOut, char aSop, char aEop)
+    : index(0), in(aIn), out(aOut), sop(aSop), eop(aEop){};
   StreamHandler(Stream* aIn, char aSop, char aEop)
-    : index(0), in(aIn), sop(aSop), eop(aEop){};
+    : StreamHandler(aIn, nullptr, aSop, aEop){};
+  StreamHandler(Stream* aIn, Stream* aOut)
+    : StreamHandler(aIn, aOut, DEFAULT_SOP, DEFAULT_EOP){};
   StreamHandler(Stream* aIn)
-    : index(0), in(aIn), sop('<'), eop('>'){};
+    : StreamHandler(aIn, nullptr){};
+
   void run();
 
   void setGreedy(bool);
@@ -126,6 +165,7 @@ public:
 
   void addCommand(Command*);
   void addFunctionCommand(char, ComFuncPtr);
+  void addReturnCommand(char, RetFuncPtr);
   template<class T>
   void addVariableUpdater(char, T&);
   boolean commandExists(char);

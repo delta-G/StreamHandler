@@ -5,6 +5,10 @@ template<>
 uint8_t VariableUpdater<uint8_t>::parse(char* str) {
   return atoi(str + 1);  // skip command character
 }
+template<>
+void VariableUpdater<uint8_t>::display(char* ret) {
+  snprintf(ret, STREAM_HANDLER_BUFFER_SIZE, "<%c%u>", matchChar, var);
+}
 
 // define some variables
 int i = 2;
@@ -20,11 +24,10 @@ void aFunction(char* str) {
   Serial.print(" - prints i - ");
   Serial.println(i);
 }
-void bFunction(char* str) {
+void bFunction(char* str, char* ret) {
   Serial.print("\n ** B function - ");
   Serial.println(str);
-  Serial.print(" - prints j - ");
-  Serial.println(j);
+  snprintf(ret, STREAM_HANDLER_BUFFER_SIZE, "matched 'B' printed j %d", j);
 }
 void cFunction(char* str) {
   Serial.print("\n ** C function - ");
@@ -49,7 +52,7 @@ void eFunction(char* str) {
 
 // test String   <A_Hello><I42><A><D><M3.141592><D><E><N127><E>
 // create a StreamHandler and connect to Serial
-StreamHandler streamHandler(&Serial);
+StreamHandler streamHandler(&Serial, &Serial);
 
 void setup() {
   Serial.begin(115200);
@@ -57,7 +60,9 @@ void setup() {
   Serial.println("\n\n**** Starting StreamHandler.ino **** \n\n");
   // add commands
   streamHandler.addFunctionCommand('A', aFunction);
-  streamHandler.addFunctionCommand('B', bFunction);
+
+  streamHandler.addReturnCommand('B', bFunction);
+
   streamHandler.addFunctionCommand('C', cFunction);
   streamHandler.addFunctionCommand('D', dFunction);
   streamHandler.addFunctionCommand('E', eFunction);
