@@ -63,7 +63,7 @@ void setup() {
   delay(1000);
   Serial.println("\n\n**** Starting StreamHandler.ino **** \n\n");
   // add commands
-  streamHandler.addReturnCommand('A', aFunction);   
+  streamHandler.addReturnCommand('A', aFunction);
   streamHandler.addReturnCommand('B', bFunction);
 
   streamHandler.addFunctionCommand('C', cFunction);

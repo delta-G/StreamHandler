@@ -36,10 +36,11 @@ void StreamHandler::run() {
   //		handleRawData();
   //	} else
   if (in->available()) {
+    int counter = greedy;
     do {
       char c = in->read();
       handleChar(c);
-    } while (in->available() && greedy);
+    } while (in->available() && counter--);
   }
 }
 
@@ -53,9 +54,10 @@ void StreamHandler::handleChar(const char c) {
     if (c == eop) {
       receiving = false;
       checkCommands();
+    } else {
+      inBuffer[index] = c;
+      inBuffer[++index] = 0;
     }
-    inBuffer[index] = c;
-    inBuffer[++index] = 0;
 
     if (index >= STREAM_HANDLER_BUFFER_SIZE - 1) {
       index--;
@@ -63,11 +65,11 @@ void StreamHandler::handleChar(const char c) {
   }
 }
 
-void StreamHandler::setGreedy(bool aBoo) {
-  greedy = aBoo;
+void StreamHandler::setGreedy(int g) {
+  greedy = g;
 }
 
-bool StreamHandler::getGreedy() {
+int StreamHandler::getGreedy() {
   return greedy;
 }
 

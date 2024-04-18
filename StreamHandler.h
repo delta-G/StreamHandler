@@ -151,7 +151,7 @@ private:
   char eop;
 
   boolean receiving = false;
-  boolean greedy = false;
+  int greedy = 0;
 
   void handleChar(char c);
 
@@ -175,10 +175,10 @@ public:
 
   void run();
 
-  void setGreedy(bool);
-  bool getGreedy();
+  void setGreedy(int);
+  int getGreedy();
 
-  void setDefaultHandler(void(*)(char*, char*));
+  void setDefaultHandler(void (*)(char*, char*));
 
   void addCommand(Command*);
   void addFunctionCommand(char, ComFuncPtr);
