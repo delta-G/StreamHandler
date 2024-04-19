@@ -1,29 +1,5 @@
 #include "StreamHandler.h"
 
-
-// parses an integer from the string
-template<>
-int VariableUpdater<int>::parse(char* str) {
-  return atoi(str + 1);  // skip command character
-}
-// parses an double from the string
-template<>
-float VariableUpdater<float>::parse(char* str) {
-  return atof(str + 1);  // skip command character
-}
-
-template<>
-void VariableUpdater<int>::display(char* ret) {
-  snprintf(ret, STREAM_HANDLER_BUFFER_SIZE, "<%c%d>", matchChar, var);
-}
-
-template<>
-void VariableUpdater<float>::display(char* ret) {
-  char buf[16];
-  dtostrf(var, 2, 2, buf);
-  snprintf(ret, STREAM_HANDLER_BUFFER_SIZE, "<%c%s>", matchChar, buf);
-}
-
 /*
 *
 *    StreamHandler methods
@@ -42,6 +18,7 @@ void StreamHandler::run() {
       handleChar(c);
     } while (in->available() && counter--);
   }
+  sendReports();
 }
 
 void StreamHandler::handleChar(const char c) {
@@ -77,11 +54,18 @@ void StreamHandler::setDefaultHandler(void (*h)(char*, char*)) {
   defaultHandler = h;
 }
 
-void StreamHandler::addCommand(Command* com) {
+void StreamHandler::addCommand(StreamCommand* com) {
   if (!commandExists(com->matchChar)) {
-    com->next = first;
-    first = com;
+    com->next = firstCom;
+    firstCom->prev = com;
+    firstCom = com;
   }
+}
+
+void StreamHandler::addReporter(StreamReporter* rep) {
+  rep->next = firstRep;
+  firstRep->prev = rep;
+  firstRep = rep;
 }
 
 void StreamHandler::addFunctionCommand(char c, ComFuncPtr f) {
@@ -89,6 +73,11 @@ void StreamHandler::addFunctionCommand(char c, ComFuncPtr f) {
     FunctionCommand* command = new FunctionCommand(c, f);
     addCommand(command);
   }
+}
+
+void StreamHandler::addTimedFunctionReporter(RepFuncPtr f, unsigned long i) {
+  TimedFunctionReporter* reporter = new TimedFunctionReporter(f, i);
+  addReporter(reporter);
 }
 
 void StreamHandler::addReturnCommand(char c, RetFuncPtr f) {
@@ -99,7 +88,7 @@ void StreamHandler::addReturnCommand(char c, RetFuncPtr f) {
 }
 
 boolean StreamHandler::commandExists(char c) {
-  for (Command* ptr = first; ptr != nullptr; ptr = ptr->next) {
+  for (StreamCommand* ptr = firstCom; ptr != nullptr; ptr = ptr->next) {
     if (ptr->match(c)) {
       return true;
     }
@@ -109,7 +98,7 @@ boolean StreamHandler::commandExists(char c) {
 
 void StreamHandler::checkCommands() {
   bool found = false;
-  for (Command* ptr = first; ptr != nullptr; ptr = ptr->next) {
+  for (StreamCommand* ptr = firstCom; ptr != nullptr; ptr = ptr->next) {
     // Start markers should be stripped.  Command char should be first element
     if (ptr->match(*inBuffer)) {
       found = true;
@@ -120,6 +109,13 @@ void StreamHandler::checkCommands() {
   }
   if (defaultHandler && !found) {
     defaultHandler(inBuffer, outBuffer);
+    sendOutBuffer();
+  }
+}
+
+void StreamHandler::sendReports() {
+  for (StreamReporter* ptr = firstRep; ptr != nullptr; ptr = ptr->next) {
+    ptr->handle(outBuffer);
     sendOutBuffer();
   }
 }

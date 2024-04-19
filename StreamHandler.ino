@@ -17,6 +17,8 @@ int k = 4;
 float m = 2.2;
 uint8_t n = 6;
 
+int analog;
+
 //define some functions to print them
 void aFunction(char* str, char* ret) {
   Serial.print("\n ** A function - ");
@@ -49,6 +51,10 @@ void eFunction(char* str) {
   Serial.println(n);
 }
 
+void timeFunction(char* out) {
+  snprintf(out, STREAM_HANDLER_BUFFER_SIZE, "Time is %lu\n", millis());
+}
+
 void def(char* str, char* ret) {
   strncpy(ret, "Default Handler", STREAM_HANDLER_BUFFER_SIZE);
   Serial.println(str);
@@ -77,9 +83,14 @@ void setup() {
   streamHandler.addVariableUpdater('M', m);
   streamHandler.addVariableUpdater('N', n);
 
+  streamHandler.addTimedVariableReporter('Z', i, 1000);
+  streamHandler.addTimedFunctionReporter(timeFunction, 750);
+  streamHandler.addOnChangeVariableReporter('#', analog);
+
   streamHandler.setDefaultHandler(def);
 }
 
 void loop() {
   streamHandler.run();  // run the stream handler
+  analog = analogRead(0);
 }
