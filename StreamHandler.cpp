@@ -65,7 +65,7 @@ void StreamHandler::handleChar(const char c) {
       }
     }
 
-    if (index >= STREAM_HANDLER_BUFFER_SIZE - 1) {
+    if (index >= STREAM_HANDLER_MAX_LENGTH) {
       index--;
     }
   }

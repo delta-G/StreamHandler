@@ -22,6 +22,7 @@ StreamHandler  --  Some automation for Stream objects
 #define STREAMHANDLERDEFINES_H
 
 #define STREAM_HANDLER_BUFFER_SIZE 64
+#define STREAM_HANDLER_MAX_LENGTH ((STREAM_HANDLER_BUFFER_SIZE) - 4)
 
 #define DEFAULT_SOP '<'
 

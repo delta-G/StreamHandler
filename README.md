@@ -36,10 +36,10 @@ These all require as a first argument a char.  This char must be unique.  If you
 >This function creates the most basic type of function caller.  The function pointer `f` should point to a function that returns void and takes a char* as the argument.  When called, the entire input string will be passed to this function including the command character but not the end markers.  You are free to include anything in this message that you want. 
 
 **`addReturnCommand(char c, void(*f)(char*, char*))`**
->This function is similar to `addFunctionCommand` except that the function pointer must point to a function that takes two char* arguments.  The first will point to the input string with end markers stripped.  The second will point to an output buffer where you can write a return string up to `STREAM_HANDLER_BUFFER_SIZE` bytes long.  This string will be sent to the output Stream as soon as your function returns.  
+>This function is similar to `addFunctionCommand` except that the function pointer must point to a function that takes two char* arguments.  The first will point to the input string with end markers stripped.  The second will point to an output buffer where you can write a return string up to `STREAM_HANDLER_MAX_LENGTH` bytes long.  This string will be sent to the output Stream as soon as your function returns.  
 
-**`addVariableUpdater(char c, T& v)`**
->This function takes a reference to any type of variable.  It will call a custom parser and update the given variable with whatever value follows the command character.  Currently parsers are implemented for float and int, but they are marked as weak and can be overridden if you wish to implement your own parsing routine.  
+**`addVariableUpdater(char c, T& v, bool e = true)`**
+>This function takes a reference to any type of variable.  It will call a custom parser and update the given variable with whatever value follows the command character.  The optional third boolean argument determines whether the new parsed value will be echoed back to the output (default is true).  Currently parsers are implemented for float and int, but they are marked as weak and can be overridden if you wish to implement your own parsing routine.  
 
 <br><br>
 #Reporters

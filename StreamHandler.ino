@@ -20,22 +20,22 @@ StreamHandler  --  Some automation for Stream objects
 
 #include "StreamHandler.h"
 
-// parses an double from the string
-template<>
-uint8_t VariableUpdater<uint8_t>::parse(char* str) {
-  return atoi(str + 1);  // skip command character
-}
-template<>
-void VariableUpdater<uint8_t>::display(char* ret) {
-  snprintf(ret, STREAM_HANDLER_BUFFER_SIZE, "<%c%u>", matchChar, var);
-}
+// parses an uint8_t from the string
+// template<>
+// uint8_t VariableUpdater<uint8_t>::parse(char* str) {
+//   return atoi(str + 1);  // skip command character
+// }
+// template<>
+// void VariableUpdater<uint8_t>::display(char* ret) {
+//   snprintf(ret, STREAM_HANDLER_BUFFER_SIZE, "<%c%u>", matchChar, var);
+// }
 
 // define some variables
 int i = 2;
 int j = 3;
 int k = 4;
 float m = 2.2;
-uint8_t n = 6;
+// uint8_t n = 6;
 
 int analog;
 
@@ -64,12 +64,12 @@ void dFunction(char* str) {
   Serial.println(m, 6);
 }
 
-void eFunction(char* str) {
-  Serial.print("\n ** E function - ");
-  Serial.println(str);
-  Serial.print(" - prints n - ");
-  Serial.println(n);
-}
+// void eFunction(char* str) {
+//   Serial.print("\n ** E function - ");
+//   Serial.println(str);
+//   Serial.print(" - prints n - ");
+//   Serial.println(n);
+// }
 
 void timeFunction(char* out) {
   snprintf(out, STREAM_HANDLER_BUFFER_SIZE, "Time is %lu\n", millis());
@@ -102,14 +102,14 @@ void setup() {
 
   streamHandler.addFunctionCommand('C', cFunction);
   streamHandler.addFunctionCommand('D', dFunction);
-  streamHandler.addFunctionCommand('E', eFunction);
+  //streamHandler.addFunctionCommand('E', eFunction);
 
   streamHandler.addVariableUpdater('I', i);
   streamHandler.addVariableUpdater('J', j, false);  // doesn't send return back
   streamHandler.addVariableUpdater('K', k);
 
   streamHandler.addVariableUpdater('M', m);
-  streamHandler.addVariableUpdater('N', n);
+  // streamHandler.addVariableUpdater('N', n);
 
   // streamHandler.addTimedVariableReporter('Z', i, 1000);
   // streamHandler.addTimedFunctionReporter(timeFunction, 750);

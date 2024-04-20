@@ -33,12 +33,12 @@ float __attribute__((weak)) VariableUpdater<float>::parse(char* str) {
 
 template<>
 void __attribute__((weak)) VariableUpdater<int>::display(char* ret) {
-  snprintf(ret, STREAM_HANDLER_BUFFER_SIZE, "<%c%d>", matchChar, var);
+  snprintf(ret, STREAM_HANDLER_MAX_LENGTH, "<%c%d>", matchChar, var);
 }
 
 template<>
 void __attribute__((weak)) VariableUpdater<float>::display(char* ret) {
   char buf[16];
   dtostrf(var, 2, 2, buf);
-  snprintf(ret, STREAM_HANDLER_BUFFER_SIZE, "<%c%s>", matchChar, buf);
+  snprintf(ret, STREAM_HANDLER_MAX_LENGTH, "<%c%s>", matchChar, buf);
 }

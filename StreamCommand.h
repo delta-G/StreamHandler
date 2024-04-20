@@ -23,6 +23,7 @@ StreamHandler  --  Some automation for Stream objects
 
 #include "Arduino.h"
 #include "StreamHandlerDefines.h"
+#include "StreamParser.h"
 
 #ifndef DEFAULT_VU_ECHO
 #define DEFAULT_VU_ECHO true
@@ -141,11 +142,12 @@ private:
   T parse(char*);
   void display(char*);
   bool echo;
+  Parser parser;
 
 protected:
 
   virtual void handle(char* str, char* ret) {
-    var = parse(str);
+    var = parser.parse<T>(str+1);  // skip command char
     if (echo) {
       display(ret);
     }
@@ -154,7 +156,7 @@ protected:
 public:
 
   VariableUpdater(char c, T& v, bool e)
-    : StreamCommand(c), var(v), echo(e){};
+    : StreamCommand(c), var(v), echo(e), parser(defaultParser) {};
   VariableUpdater(char c, T& v)
     : VariableUpdater(c, v, DEFAULT_VU_ECHO){};
 };
