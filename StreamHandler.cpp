@@ -44,7 +44,7 @@ void StreamHandler::run() {
 void StreamHandler::handleChar(const char c) {
   if (raw) {
     inBuffer[index++] = c;
-    if (index >= inBuffer[1] + 3) {
+    if (index >= inBuffer[1] + 2) {
       raw = false;
     }
   } else if (c == sop) {
@@ -114,7 +114,8 @@ FunctionCommand* StreamHandler::addFunctionCommand(char c, ComFuncPtr f) {
 
 TimedFunctionReporter* StreamHandler::addTimedFunctionReporter(RepFuncPtr f, unsigned long i) {
   TimedFunctionReporter* reporter = new TimedFunctionReporter(f, i);
-  return addReporter(reporter);
+  addReporter(reporter);
+  return reporter;
 }
 
 ReturnCommand* StreamHandler::addReturnCommand(char c, RetFuncPtr f) {
@@ -166,7 +167,7 @@ void StreamHandler::sendReports() {
 void StreamHandler::sendOutBuffer() {
   if (out) {
     if (raw) {
-      out->write(outBuffer, outBuffer[2]);
+      out->write(outBuffer, outBuffer[2] + 4);
       outBuffer[0] = 0;
     }
     if (strlen(outBuffer) > 0) {

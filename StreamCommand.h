@@ -56,8 +56,8 @@ protected:
     : matchChar(c) {}
 
 public:
-  void setRawIn(bool r = true) {isRawIn = r;}
-  void setRawOut(bool r = true) {isRawOut = r;}
+  StreamCommand* setRawIn(bool r = true) {isRawIn = r; return this;}
+  StreamCommand* setRawOut(bool r = true) {isRawOut = r; return this;}
 
   StreamCommand(const StreamCommand& other) = delete;
   StreamCommand& operator=(const StreamCommand& other) = delete;

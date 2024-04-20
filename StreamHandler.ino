@@ -80,7 +80,15 @@ void def(char* str, char* ret) {
   Serial.println(str);
 }
 
+void rawFunc(char* str, char* ret) {
+  Serial.println("Raw Func Called!");
+  Serial.println(str);
+  ret[0] = '<';
+  memcpy(ret+1, str, str[1] + 2);
+  ret[str[1] + 3] = '>';
+}
 // test String   <A_Hello><I42><A><D><M3.141592><D><E><N127><E>
+//  <Q 12345678901234567890123456789012>>>>>
 // create a StreamHandler and connect to Serial
 StreamHandler streamHandler(&Serial, &Serial);
 
@@ -103,9 +111,11 @@ void setup() {
   streamHandler.addVariableUpdater('M', m);
   streamHandler.addVariableUpdater('N', n);
 
-  streamHandler.addTimedVariableReporter('Z', i, 1000);
-  streamHandler.addTimedFunctionReporter(timeFunction, 750);
-  streamHandler.addOnChangeVariableReporter('#', analog);
+  // streamHandler.addTimedVariableReporter('Z', i, 1000);
+  // streamHandler.addTimedFunctionReporter(timeFunction, 750);
+  // streamHandler.addOnChangeVariableReporter('#', analog);
+
+  streamHandler.addReturnCommand('Q', rawFunc)->setRawIn()->setRawOut();
 
   streamHandler.setDefaultHandler(def);
 }
