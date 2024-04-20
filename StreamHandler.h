@@ -73,6 +73,17 @@ public:
   StreamHandler(Stream* aIn)
     : StreamHandler(aIn, nullptr){};
 
+  StreamHandler(const StreamHandler& other) = delete;
+  StreamHandler& operator=(const StreamHandler& other) = delete;
+  ~StreamHandler() {
+    for (StreamCommand* ptr = firstCom; ptr != nullptr; ptr = ptr->next) {
+      delete ptr;
+    }
+    for (StreamReporter* ptr = firstRep; ptr != nullptr; ptr = ptr->next) {
+      delete ptr;
+    }
+  }
+
   void run();
 
   void setGreedy(int);

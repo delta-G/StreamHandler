@@ -40,11 +40,13 @@ protected:
 
 public:
 
-  void setRawOut(bool r = true) {isRawOut = r;}
+  void setRawOut(bool r = true) {
+    isRawOut = r;
+  }
 
   StreamReporter(const StreamReporter& other) = delete;
   StreamReporter& operator=(const StreamReporter& other) = delete;
-  ~StreamReporter() {
+  virtual ~StreamReporter() {
     // Remove a link in the chain.
     if (prev) {
       prev->next = next;

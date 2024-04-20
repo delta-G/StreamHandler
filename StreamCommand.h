@@ -56,17 +56,23 @@ protected:
     : matchChar(c) {}
 
 public:
-  StreamCommand* setRawIn(bool r = true) {isRawIn = r; return this;}
-  StreamCommand* setRawOut(bool r = true) {isRawOut = r; return this;}
+  StreamCommand* setRawIn(bool r = true) {
+    isRawIn = r;
+    return this;
+  }
+  StreamCommand* setRawOut(bool r = true) {
+    isRawOut = r;
+    return this;
+  }
 
   StreamCommand(const StreamCommand& other) = delete;
   StreamCommand& operator=(const StreamCommand& other) = delete;
-  ~StreamCommand() {
-    // Remove a link in the chain. 
-    if(prev){
+  virtual ~StreamCommand() {
+    // Remove a link in the chain.
+    if (prev) {
       prev->next = next;
     }
-    if(next){
+    if (next) {
       next->prev = prev;
     }
   }
