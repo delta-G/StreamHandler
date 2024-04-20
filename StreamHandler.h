@@ -48,6 +48,7 @@ private:
   char eop;
 
   boolean receiving = false;
+  boolean raw = false;
   int greedy = 0;
 
   void handleChar(char c);
@@ -57,7 +58,7 @@ private:
   StreamCommand* firstCom;
   StreamReporter* firstRep;
 
-  boolean commandExists(char);
+  StreamCommand* findCommand(char);
   void checkCommands();
   void sendReports();
   void sendOutBuffer();
@@ -94,7 +95,7 @@ public:
 
 template<class T>
 void StreamHandler::addVariableUpdater(char c, T& v, bool e) {
-  if (!commandExists(c)) {
+  if (findCommand(c) == nullptr) {
     VariableUpdater<T>* updater = new VariableUpdater<T>(c, v, e);
     addCommand(updater);
   }

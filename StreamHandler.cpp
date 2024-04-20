@@ -42,8 +42,23 @@ void StreamHandler::run() {
 }
 
 void StreamHandler::handleChar(const char c) {
-
-  if (c == sop) {
+  if (raw) {
+    // here we have at least 2 characters
+    // inBuffer[0] is the command char
+    // inBuffer[1] is the count
+    // Collect chars until we have the total
+    if (index >= inBuffer[1] + 3) {
+      // here we have the entire contents plus the command char and count
+      // that means this character should be the end marker
+      if (c == eop) {
+        checkCommands();
+        raw = false;
+        receiving = false;
+      }
+    }
+    // Otherwise just add it to the buffer and keep counting
+    inBuffer[index++] = c;
+  } else if (c == sop) {
     receiving = true;
     index = 0;
     inBuffer[0] = 0;
@@ -54,6 +69,11 @@ void StreamHandler::handleChar(const char c) {
     } else {
       inBuffer[index] = c;
       inBuffer[++index] = 0;
+      if (index == 2) {
+        if (findCommand(inBuffer[0])->isRaw) {
+          raw = true;
+        }
+      }
     }
 
     if (index >= STREAM_HANDLER_BUFFER_SIZE - 1) {
@@ -75,7 +95,7 @@ void StreamHandler::setDefaultHandler(void (*h)(char*, char*)) {
 }
 
 void StreamHandler::addCommand(StreamCommand* com) {
-  if (!commandExists(com->matchChar)) {
+  if (findCommand(com->matchChar) == nullptr) {
     com->next = firstCom;
     firstCom->prev = com;
     firstCom = com;
@@ -89,7 +109,7 @@ void StreamHandler::addReporter(StreamReporter* rep) {
 }
 
 void StreamHandler::addFunctionCommand(char c, ComFuncPtr f) {
-  if (!commandExists(c)) {
+  if (findCommand(c) == nullptr) {
     FunctionCommand* command = new FunctionCommand(c, f);
     addCommand(command);
   }
@@ -101,19 +121,19 @@ void StreamHandler::addTimedFunctionReporter(RepFuncPtr f, unsigned long i) {
 }
 
 void StreamHandler::addReturnCommand(char c, RetFuncPtr f) {
-  if (!commandExists(c)) {
+  if (findCommand(c) == nullptr) {
     ReturnCommand* command = new ReturnCommand(c, f);
     addCommand(command);
   }
 }
 
-boolean StreamHandler::commandExists(char c) {
+StreamCommand* StreamHandler::findCommand(char c) {
   for (StreamCommand* ptr = firstCom; ptr != nullptr; ptr = ptr->next) {
     if (ptr->match(c)) {
-      return true;
+      return ptr;
     }
   }
-  return false;
+  return nullptr;
 }
 
 void StreamHandler::checkCommands() {

@@ -49,6 +49,7 @@ private:
   StreamCommand();  // disallow default constructor
 protected:
   const char matchChar;
+  bool isRaw = false;
   virtual void handle(char* str, char* ret) = 0;
   StreamCommand(char c)
     : matchChar(c) {}
