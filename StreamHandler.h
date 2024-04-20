@@ -76,11 +76,12 @@ public:
   StreamHandler(const StreamHandler& other) = delete;
   StreamHandler& operator=(const StreamHandler& other) = delete;
   ~StreamHandler() {
-    for (StreamCommand* ptr = firstCom; ptr != nullptr; ptr = ptr->next) {
-      delete ptr;
+    while(firstCom != nullptr){
+      // The StreamCommand destructor will move firstCom to the next instance.
+      delete firstCom;
     }
-    for (StreamReporter* ptr = firstRep; ptr != nullptr; ptr = ptr->next) {
-      delete ptr;
+    while(firstRep != nullptr){
+      delete firstRep;
     }
   }
 
