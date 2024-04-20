@@ -171,7 +171,7 @@ void StreamHandler::sendOutBuffer() {
       outBuffer[outBuffer[2] + 3] = eop;
       out->write(outBuffer, outBuffer[2] + 4);
       outBuffer[0] = 0;
-    } else if (strlen(outBuffer+1) > 0) {
+    } else if (strlen(outBuffer + 1) > 0) {
       outBuffer[0] = sop;
       size_t len = strlen(outBuffer);
       outBuffer[len] = eop;

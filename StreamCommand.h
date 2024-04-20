@@ -147,17 +147,17 @@ private:
 protected:
 
   virtual void handle(char* str, char* ret) {
-    var = parser.parse<T>(str+1);  // skip command char
+    var = parser.parse<T>(str + 1);  // skip command char
     if (echo) {
       ret[0] = matchChar;
-      formatter.format<T>(var, ret+1);
+      formatter.format<T>(var, ret + 1);
     }
   }
 
 public:
 
   VariableUpdater(char c, T& v, bool e)
-    : StreamCommand(c), var(v), echo(e), parser(defaultParser), formatter(defaultFormatter) {};
+    : StreamCommand(c), var(v), echo(e), parser(defaultParser), formatter(defaultFormatter){};
   VariableUpdater(char c, T& v)
     : VariableUpdater(c, v, DEFAULT_VU_ECHO){};
 };

@@ -18,16 +18,27 @@ StreamHandler  --  Some automation for Stream objects
 
      */
 
-#include "StreamReporter.h"
+#ifndef STREAM_PARSER_H
+#define STREAM_PARSER_H
 
-// template<>
-// void __attribute__((weak)) VariableReporter<int>::display(char* ret) {
-//   snprintf(ret, STREAM_HANDLER_MAX_LENGTH, "<%c%d>", codeChar, var);
-// }
+#include "Arduino.h"
+#include "StreamHandlerDefines.h"
 
-// template<>
-// void __attribute__((weak)) VariableReporter<float>::display(char* ret) {
-//   char buf[16];
-//   dtostrf(var, 2, 2, buf);
-//   snprintf(ret, STREAM_HANDLER_MAX_LENGTH, "<%c%s>", codeChar, buf);
-// }
+class Parser {
+
+public:
+  template<class T>
+  T parse(char*);
+};
+
+class Formatter {
+
+public:
+  template<class T>
+  void format(T, char*);
+};
+
+extern Parser defaultParser;
+extern Formatter defaultFormatter;
+
+#endif

@@ -20,22 +20,22 @@ StreamHandler  --  Some automation for Stream objects
 
 #include "StreamHandler.h"
 
-// parses an uint8_t from the string
-// template<>
-// uint8_t VariableUpdater<uint8_t>::parse(char* str) {
-//   return atoi(str + 1);  // skip command character
-// }
-// template<>
-// void VariableUpdater<uint8_t>::display(char* ret) {
-//   snprintf(ret, STREAM_HANDLER_BUFFER_SIZE, "<%c%u>", matchChar, var);
-// }
+//parses an uint8_t from the string
+template<>
+uint8_t Parser::parse<uint8_t>(char* str) {
+  return atoi(str + 1);  // skip command character
+}
+template<>
+void Formatter::format<uint8_t>(uint8_t v, char* ret) {
+  snprintf(ret, STREAM_HANDLER_BUFFER_SIZE, "%u", v);
+}
 
 // define some variables
 int i = 2;
 int j = 3;
 int k = 4;
 float m = 2.2;
-// uint8_t n = 6;
+uint8_t n = 6;
 
 int analog;
 
@@ -64,12 +64,12 @@ void dFunction(char* str) {
   Serial.println(m, 6);
 }
 
-// void eFunction(char* str) {
-//   Serial.print("\n ** E function - ");
-//   Serial.println(str);
-//   Serial.print(" - prints n - ");
-//   Serial.println(n);
-// }
+void eFunction(char* str) {
+  Serial.print("\n ** E function - ");
+  Serial.println(str);
+  Serial.print(" - prints n - ");
+  Serial.println(n);
+}
 
 void timeFunction(char* out) {
   snprintf(out, STREAM_HANDLER_MAX_LENGTH, "Time is %lu\n", millis());
@@ -84,7 +84,7 @@ void rawFunc(char* str, char* ret) {
   Serial.println("Raw Func Called!");
   Serial.println(str);
   ret[0] = '<';
-  memcpy(ret+1, str, str[1] + 2);
+  memcpy(ret + 1, str, str[1] + 2);
   ret[str[1] + 3] = '>';
 }
 // test String   <A_Hello><I42><A><D><M3.141592><D><E><N127><E>
@@ -102,14 +102,14 @@ void setup() {
 
   streamHandler.addFunctionCommand('C', cFunction);
   streamHandler.addFunctionCommand('D', dFunction);
-  //streamHandler.addFunctionCommand('E', eFunction);
+  streamHandler.addFunctionCommand('E', eFunction);
 
   streamHandler.addVariableUpdater('I', i);
   streamHandler.addVariableUpdater('J', j, false);  // doesn't send return back
   streamHandler.addVariableUpdater('K', k);
 
   streamHandler.addVariableUpdater('M', m);
-  // streamHandler.addVariableUpdater('N', n);
+  streamHandler.addVariableUpdater('N', n);
 
   streamHandler.addTimedVariableReporter('Z', i, 1000);
   streamHandler.addTimedFunctionReporter(timeFunction, 750);

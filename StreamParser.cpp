@@ -18,15 +18,37 @@ StreamHandler  --  Some automation for Stream objects
 
      */
 
-#ifndef STREAMHANDLERDEFINES_H
-#define STREAMHANDLERDEFINES_H
+#include "StreamParser.h"
 
-#define STREAM_HANDLER_BUFFER_SIZE 64
-#define STREAM_HANDLER_MAX_LENGTH ((STREAM_HANDLER_BUFFER_SIZE)-4)
+Parser defaultParser = Parser();
+Formatter defaultFormatter = Formatter();
+/*
+*
+*   Parser Commands
+*
+*/
+template<>
+int Parser::parse<int>(char* str) {
+  return atoi(str);
+}
 
-#define DEFAULT_SOP '<'
+template<>
+float Parser::parse<float>(char* str) {
+  return atof(str);
+}
+/*
+*
+*   Formatter Commands
+*
+*/
+template<>
+void __attribute__((weak)) Formatter::format<int>(int v, char* out) {
+  snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, "%d", v);
+}
 
-#define DEFAULT_EOP '>'
-
-
-#endif  //STREAMHANDLERDEFINES_H
+template<>
+void __attribute__((weak)) Formatter::format<float>(float v, char* out) {
+  char buf[16];
+  dtostrf(v, 2, 2, buf);
+  snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, "%s", buf);
+}
