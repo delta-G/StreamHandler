@@ -72,11 +72,11 @@ void dFunction(char* str) {
 // }
 
 void timeFunction(char* out) {
-  snprintf(out, STREAM_HANDLER_BUFFER_SIZE, "Time is %lu\n", millis());
+  snprintf(out, STREAM_HANDLER_MAX_LENGTH, "Time is %lu\n", millis());
 }
 
 void def(char* str, char* ret) {
-  strncpy(ret, "Default Handler", STREAM_HANDLER_BUFFER_SIZE);
+  strncpy(ret, "Default Handler", STREAM_HANDLER_MAX_LENGTH);
   Serial.println(str);
 }
 
@@ -111,8 +111,8 @@ void setup() {
   streamHandler.addVariableUpdater('M', m);
   // streamHandler.addVariableUpdater('N', n);
 
-  // streamHandler.addTimedVariableReporter('Z', i, 1000);
-  // streamHandler.addTimedFunctionReporter(timeFunction, 750);
+  streamHandler.addTimedVariableReporter('Z', i, 1000);
+  streamHandler.addTimedFunctionReporter(timeFunction, 750);
   // streamHandler.addOnChangeVariableReporter('#', analog);
 
   streamHandler.addReturnCommand('Q', rawFunc)->setRawIn()->setRawOut();

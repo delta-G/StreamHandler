@@ -142,7 +142,7 @@ void StreamHandler::checkCommands() {
     // Start markers should be stripped.  Command char should be first element
     if (ptr->match(*inBuffer)) {
       found = true;
-      ptr->handle(inBuffer, outBuffer);
+      ptr->handle(inBuffer, outBuffer + 1);
       raw = ptr->isRawOut;
       sendOutBuffer();
       raw = false;
@@ -150,14 +150,14 @@ void StreamHandler::checkCommands() {
     }
   }
   if (defaultHandler && !found) {
-    defaultHandler(inBuffer, outBuffer);
+    defaultHandler(inBuffer, outBuffer + 1);
     sendOutBuffer();
   }
 }
 
 void StreamHandler::sendReports() {
   for (StreamReporter* ptr = firstRep; ptr != nullptr; ptr = ptr->next) {
-    ptr->handle(outBuffer);
+    ptr->handle(outBuffer + 1);
     raw = ptr->isRawOut;
     sendOutBuffer();
     raw = false;
@@ -167,12 +167,18 @@ void StreamHandler::sendReports() {
 void StreamHandler::sendOutBuffer() {
   if (out) {
     if (raw) {
+      outBuffer[0] = sop;
+      outBuffer[outBuffer[2] + 3] = eop;
       out->write(outBuffer, outBuffer[2] + 4);
       outBuffer[0] = 0;
-    }
-    if (strlen(outBuffer) > 0) {
-      out->write(outBuffer, strlen(outBuffer));
+    } else if (strlen(outBuffer+1) > 0) {
+      outBuffer[0] = sop;
+      size_t len = strlen(outBuffer);
+      outBuffer[len] = eop;
+      outBuffer[++len] = 0;
+      out->write(outBuffer, len);
     }
     outBuffer[0] = 0;
+    outBuffer[1] = 0;
   }
 }

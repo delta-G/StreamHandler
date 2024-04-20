@@ -23,6 +23,7 @@ StreamHandler  --  Some automation for Stream objects
 
 #include "Arduino.h"
 #include "StreamHandlerDefines.h"
+#include "StreamParser.h"
 
 typedef void (*RepFuncPtr)(char*);
 
@@ -83,15 +84,15 @@ class VariableReporter : public StreamReporter {
 protected:
   char codeChar;
   T& var;
-  void display(char*);
+  Formatter& formatter;
+  void format(char* out) {
+    out[0] = codeChar;
+    formatter.format<T>(var, out + 1);
+  }
 
 public:
   VariableReporter(char c, T& v)
-    : codeChar(c), var(v) {}
-
-  void send(char* out) {
-    display(out);
-  }
+    : codeChar(c), var(v), formatter(defaultFormatter) {}
 };
 
 template<class T>
@@ -105,7 +106,7 @@ protected:
     unsigned long current = millis();
     if (current - previous >= interval) {
       previous = current;
-      VariableReporter<T>::display(out);
+      VariableReporter<T>::format(out);
     }
   }
 
@@ -123,7 +124,7 @@ protected:
   virtual void handle(char* out) {
     if (VariableReporter<T>::var != last) {
       last = VariableReporter<T>::var;
-      VariableReporter<T>::display(out);
+      VariableReporter<T>::format(out);
     }
   }
 
