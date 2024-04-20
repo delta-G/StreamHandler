@@ -80,37 +80,41 @@ public:
 
   void setDefaultHandler(void (*)(char*, char*));
 
-  void addCommand(StreamCommand*);
-  void addReporter(StreamReporter*);
-  void addFunctionCommand(char, ComFuncPtr);
-  void addTimedFunctionReporter(RepFuncPtr, unsigned long);
-  void addReturnCommand(char, RetFuncPtr);
+  StreamCommand* addCommand(StreamCommand*);
+  StreamReporter* addReporter(StreamReporter*);
+  FunctionCommand* addFunctionCommand(char, ComFuncPtr);
+  TimedFunctionReporter* addTimedFunctionReporter(RepFuncPtr, unsigned long);
+  ReturnCommand* addReturnCommand(char, RetFuncPtr);
   template<class T>
-  void addVariableUpdater(char, T&, bool = true);
+  VariableUpdater<T>* addVariableUpdater(char, T&, bool = true);
   template<class T>
-  void addTimedVariableReporter(char, T&, unsigned long);
+  TimedVariableReporter<T>* addTimedVariableReporter(char, T&, unsigned long);
   template<class T>
-  void addOnChangeVariableReporter(char, T&);
+  OnChangeVariableReporter<T>* addOnChangeVariableReporter(char, T&);
 };
 
 template<class T>
-void StreamHandler::addVariableUpdater(char c, T& v, bool e) {
+VariableUpdater<T>* StreamHandler::addVariableUpdater(char c, T& v, bool e) {
   if (findCommand(c) == nullptr) {
     VariableUpdater<T>* updater = new VariableUpdater<T>(c, v, e);
     addCommand(updater);
+    return updater;
   }
+  return nullptr;
 }
 
 template<class T>
-void StreamHandler::addTimedVariableReporter(char c, T& v, unsigned long i) {
+TimedVariableReporter<T>* StreamHandler::addTimedVariableReporter(char c, T& v, unsigned long i) {
   TimedVariableReporter<T>* reporter = new TimedVariableReporter<T>(c, v, i);
   addReporter(reporter);
+  return reporter;
 }
 
 template<class T>
-void StreamHandler::addOnChangeVariableReporter(char c, T& v) {
+OnChangeVariableReporter<T>* StreamHandler::addOnChangeVariableReporter(char c, T& v) {
   OnChangeVariableReporter<T>* reporter = new OnChangeVariableReporter<T>(c, v);
   addReporter(reporter);
+  return reporter;
 }
 
 

@@ -43,21 +43,10 @@ void StreamHandler::run() {
 
 void StreamHandler::handleChar(const char c) {
   if (raw) {
-    // here we have at least 2 characters
-    // inBuffer[0] is the command char
-    // inBuffer[1] is the count
-    // Collect chars until we have the total
-    if (index >= inBuffer[1] + 3) {
-      // here we have the entire contents plus the command char and count
-      // that means this character should be the end marker
-      if (c == eop) {
-        checkCommands();
-        raw = false;
-        receiving = false;
-      }
-    }
-    // Otherwise just add it to the buffer and keep counting
     inBuffer[index++] = c;
+    if (index >= inBuffer[1] + 3) {
+      raw = false;
+    }
   } else if (c == sop) {
     receiving = true;
     index = 0;
@@ -70,7 +59,7 @@ void StreamHandler::handleChar(const char c) {
       inBuffer[index] = c;
       inBuffer[++index] = 0;
       if (index == 2) {
-        if (findCommand(inBuffer[0])->isRaw) {
+        if (findCommand(inBuffer[0])->isRawIn) {
           raw = true;
         }
       }
@@ -94,37 +83,47 @@ void StreamHandler::setDefaultHandler(void (*h)(char*, char*)) {
   defaultHandler = h;
 }
 
-void StreamHandler::addCommand(StreamCommand* com) {
-  if (findCommand(com->matchChar) == nullptr) {
-    com->next = firstCom;
-    firstCom->prev = com;
-    firstCom = com;
+StreamCommand* StreamHandler::addCommand(StreamCommand* com) {
+  if (com) {
+    if (findCommand(com->matchChar) == nullptr) {
+      com->next = firstCom;
+      firstCom->prev = com;
+      firstCom = com;
+    }
   }
+  return com;
 }
 
-void StreamHandler::addReporter(StreamReporter* rep) {
-  rep->next = firstRep;
-  firstRep->prev = rep;
-  firstRep = rep;
+StreamReporter* StreamHandler::addReporter(StreamReporter* rep) {
+  if (rep) {
+    rep->next = firstRep;
+    firstRep->prev = rep;
+    firstRep = rep;
+  }
+  return rep;
 }
 
-void StreamHandler::addFunctionCommand(char c, ComFuncPtr f) {
+FunctionCommand* StreamHandler::addFunctionCommand(char c, ComFuncPtr f) {
   if (findCommand(c) == nullptr) {
     FunctionCommand* command = new FunctionCommand(c, f);
     addCommand(command);
+    return command;
   }
+  return nullptr;
 }
 
-void StreamHandler::addTimedFunctionReporter(RepFuncPtr f, unsigned long i) {
+TimedFunctionReporter* StreamHandler::addTimedFunctionReporter(RepFuncPtr f, unsigned long i) {
   TimedFunctionReporter* reporter = new TimedFunctionReporter(f, i);
-  addReporter(reporter);
+  return addReporter(reporter);
 }
 
-void StreamHandler::addReturnCommand(char c, RetFuncPtr f) {
+ReturnCommand* StreamHandler::addReturnCommand(char c, RetFuncPtr f) {
   if (findCommand(c) == nullptr) {
     ReturnCommand* command = new ReturnCommand(c, f);
     addCommand(command);
+    return command;
   }
+  return nullptr;
 }
 
 StreamCommand* StreamHandler::findCommand(char c) {
@@ -143,7 +142,9 @@ void StreamHandler::checkCommands() {
     if (ptr->match(*inBuffer)) {
       found = true;
       ptr->handle(inBuffer, outBuffer);
+      raw = ptr->isRawOut;
       sendOutBuffer();
+      raw = false;
       break;
     }
   }
@@ -156,13 +157,21 @@ void StreamHandler::checkCommands() {
 void StreamHandler::sendReports() {
   for (StreamReporter* ptr = firstRep; ptr != nullptr; ptr = ptr->next) {
     ptr->handle(outBuffer);
+    raw = ptr->isRawOut;
     sendOutBuffer();
+    raw = false;
   }
 }
 
 void StreamHandler::sendOutBuffer() {
-  if (out && strlen(outBuffer) > 0) {
-    out->write(outBuffer, strlen(outBuffer));
+  if (out) {
+    if (raw) {
+      out->write(outBuffer, outBuffer[2]);
+      outBuffer[0] = 0;
+    }
+    if (strlen(outBuffer) > 0) {
+      out->write(outBuffer, strlen(outBuffer));
+    }
+    outBuffer[0] = 0;
   }
-  outBuffer[0] = 0;
 }

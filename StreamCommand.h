@@ -49,12 +49,15 @@ private:
   StreamCommand();  // disallow default constructor
 protected:
   const char matchChar;
-  bool isRaw = false;
+  bool isRawIn = false;
+  bool isRawOut = false;
   virtual void handle(char* str, char* ret) = 0;
   StreamCommand(char c)
     : matchChar(c) {}
 
 public:
+  void setRawIn(bool r = true) {isRawIn = r;}
+  void setRawOut(bool r = true) {isRawOut = r;}
 
   StreamCommand(const StreamCommand& other) = delete;
   StreamCommand& operator=(const StreamCommand& other) = delete;

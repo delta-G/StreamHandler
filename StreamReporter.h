@@ -33,11 +33,15 @@ private:
   StreamReporter* prev;
 
 protected:
+  bool isRawOut = false;
   virtual void handle(char*) = 0;
 
   StreamReporter() {}
 
 public:
+
+  void setRawOut(bool r = true) {isRawOut = r;}
+
   StreamReporter(const StreamReporter& other) = delete;
   StreamReporter& operator=(const StreamReporter& other) = delete;
   ~StreamReporter() {
