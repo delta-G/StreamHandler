@@ -74,7 +74,7 @@ public:
   int decimals;
   virtual void format(float, char*);
   Formatter(char* f)
-    :  formStr(f), decimals(0) {}
+    : formStr(f), decimals(0) {}
   Formatter(int d)
     : formStr(nullptr), decimals(d) {}
   Formatter()
@@ -89,7 +89,7 @@ public:
   int decimals;
   virtual void format(double, char*);
   Formatter(char* f)
-    :  formStr(f), decimals(0) {}
+    : formStr(f), decimals(0) {}
   Formatter(int d)
     : formStr(nullptr), decimals(d) {}
   Formatter()

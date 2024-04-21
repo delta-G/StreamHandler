@@ -31,6 +31,21 @@ int Parser<int>::parse(char* str) {
 }
 
 template<>
+unsigned int Parser<unsigned int>::parse(char* str) {
+  return strtoul(str, NULL, base);
+}
+
+template<>
+long Parser<long>::parse(char* str) {
+  return strtol(str, NULL, base);
+}
+
+template<>
+unsigned long Parser<unsigned long>::parse(char* str) {
+  return strtoul(str, NULL, base);
+}
+
+template<>
 float Parser<float>::parse(char* str) {
   return atof(str);
 }

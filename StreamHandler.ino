@@ -30,11 +30,11 @@ void Formatter<uint8_t>::format(uint8_t v, char* ret) {
   snprintf(ret, STREAM_HANDLER_BUFFER_SIZE, "%u", v);
 }
 
-class MyCustomFormatter : public Formatter<int> {
-  virtual void format(int, char*);
+class MyCustomFormatter : public Formatter<unsigned int> {
+  virtual void format(unsigned int, char*);
 };
 
-void MyCustomFormatter::format(int v, char* out) {
+void MyCustomFormatter::format(unsigned int v, char* out) {
   snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, "CUSTOM - %d!", v);
 }
 
@@ -44,8 +44,8 @@ void MyCustomFormatter::format(int v, char* out) {
 
 // define some variables
 int i = 2;
-int j = 3;
-int k = 4;
+long j = 3;
+unsigned int k = 4;
 float m = 2.2;
 uint8_t n = 6;
 
@@ -60,7 +60,7 @@ void aFunction(char* str, char* ret) {
 void bFunction(char* str, char* ret) {
   Serial.print("\n ** B function - ");
   Serial.println(str);
-  snprintf(ret, STREAM_HANDLER_BUFFER_SIZE, "matched 'B' printed j %d", j);
+  snprintf(ret, STREAM_HANDLER_BUFFER_SIZE, "matched 'B' printed j %ld", j);
 }
 void cFunction(char* str) {
   Serial.print("\n ** C function - ");
@@ -117,8 +117,8 @@ void setup() {
   streamHandler.addFunctionCommand('E', eFunction);
 
   streamHandler.addVariableUpdater('I', i);
-  streamHandler.addVariableUpdater('J', j, false);  // doesn't send return back
-  streamHandler.addVariableUpdater('K', k)->setParser(new Parser<int>(HEX));
+  streamHandler.addVariableUpdater('J', j);  // doesn't send return back
+  streamHandler.addVariableUpdater('K', k)->setParser(new Parser<unsigned int>(HEX));
 
   streamHandler.addVariableUpdater('M', m);
   streamHandler.addVariableUpdater('N', n);
