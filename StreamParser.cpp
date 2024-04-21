@@ -46,15 +46,40 @@ double Parser<double>::parse(char* str) {
 *
 */
 
+const char* defaultIntFormat = "%d";
+const char* defaultUnsignedIntFormat = "%u";
+const char* defaultLongFormat = "%ld";
+const char* defaultUnsignedLongFormat = "%lu";
+
+template<>
 void __attribute__((weak)) Formatter<int>::format(int v, char* out) {
+  if(formStr == nullptr){
+    formStr = defaultIntFormat;
+  }
   snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, formStr, v);
 }
 
+template<>
 void __attribute__((weak)) Formatter<unsigned int>::format(unsigned int v, char* out) {
+  if(formStr == nullptr){
+    formStr = defaultUnsignedIntFormat;
+  }
   snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, formStr, v);
 }
 
+template<>
 void __attribute__((weak)) Formatter<long>::format(long v, char* out) {
+  if(formStr == nullptr){
+    formStr = defaultLongFormat;
+  }
+  snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, formStr, v);
+}
+
+template<>
+void __attribute__((weak)) Formatter<unsigned long>::format(unsigned long v, char* out) {
+  if(formStr == nullptr){
+    formStr = defaultUnsignedLongFormat;
+  }
   snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, formStr, v);
 }
 
