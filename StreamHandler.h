@@ -24,6 +24,7 @@ StreamHandler  --  Some automation for Stream objects
 #include "Arduino.h"
 #include "StreamCommand.h"
 #include "StreamReporter.h"
+#include "StreamParser.h"
 #include "StreamHandlerDefines.h"
 
 

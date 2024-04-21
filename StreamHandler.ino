@@ -30,6 +30,17 @@ void Formatter::format<uint8_t>(uint8_t v, char* ret) {
   snprintf(ret, STREAM_HANDLER_BUFFER_SIZE, "%u", v);
 }
 
+class MyFormatter : public Formatter {
+
+public:
+  template<class T>
+  void format(T, char*);
+} myFormatter;
+template<>
+void MyFormatter::format<int>(int v, char* out) {
+  snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, "OOPS%d!", v);
+}
+
 // define some variables
 int i = 2;
 int j = 3;
@@ -111,7 +122,7 @@ void setup() {
   streamHandler.addVariableUpdater('M', m);
   streamHandler.addVariableUpdater('N', n);
 
-  streamHandler.addTimedVariableReporter('Z', i, 1000);
+  streamHandler.addTimedVariableReporter('Z', i, 1000)->setFormatter(&myFormatter);
   streamHandler.addTimedFunctionReporter(timeFunction, 750);
   // streamHandler.addOnChangeVariableReporter('#', analog);
 

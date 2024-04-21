@@ -156,6 +156,15 @@ protected:
 
 public:
 
+  VariableUpdater* setParser(Parser* p) {
+    parser = p;
+    return this;
+  }
+  VariableUpdater* setFormatter(Formatter* f) {
+    formatter = f;
+    return this;
+  }
+
   VariableUpdater(char c, T& v, bool e)
     : StreamCommand(c), var(v), echo(e), parser(defaultParser), formatter(defaultFormatter){};
   VariableUpdater(char c, T& v)
