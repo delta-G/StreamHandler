@@ -141,32 +141,32 @@ private:
   VariableUpdater();  // disallow default constructor
   void display(char*);
   bool echo;
-  Parser& parser;
-  Formatter& formatter;
+  Parser<T> parser;
+  Formatter<T> formatter;
 
 protected:
 
   virtual void handle(char* str, char* ret) {
-    var = parser.parse<T>(str + 1);  // skip command char
+    var = parser.parse(str + 1);  // skip command char
     if (echo) {
       ret[0] = matchChar;
-      formatter.format<T>(var, ret + 1);
+      formatter.format(var, ret + 1);
     }
   }
 
 public:
 
-  VariableUpdater* setParser(Parser* p) {
+  VariableUpdater* setParser(Parser<T> p) {
     parser = p;
     return this;
   }
-  VariableUpdater* setFormatter(Formatter* f) {
+  VariableUpdater* setFormatter(Formatter<T> f) {
     formatter = f;
     return this;
   }
 
   VariableUpdater(char c, T& v, bool e)
-    : StreamCommand(c), var(v), echo(e), parser(defaultParser), formatter(defaultFormatter){};
+    : StreamCommand(c), var(v), echo(e), parser(), formatter(){};
   VariableUpdater(char c, T& v)
     : VariableUpdater(c, v, DEFAULT_VU_ECHO){};
 };

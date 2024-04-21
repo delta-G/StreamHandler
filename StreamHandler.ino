@@ -20,25 +20,21 @@ StreamHandler  --  Some automation for Stream objects
 
 #include "StreamHandler.h"
 
-//parses an uint8_t from the string
+// parses an uint8_t from the string
 template<>
-uint8_t Parser::parse<uint8_t>(char* str) {
+uint8_t Parser<uint8_t>::parse(char* str) {
   return atoi(str + 1);  // skip command character
 }
 template<>
-void Formatter::format<uint8_t>(uint8_t v, char* ret) {
+void Formatter<uint8_t>::format(uint8_t v, char* ret) {
   snprintf(ret, STREAM_HANDLER_BUFFER_SIZE, "%u", v);
 }
 
-class MyFormatter : public Formatter {
-
-public:
-  template<class T>
-  void format(T, char*);
+class MyFormatter : public Formatter<int> {
 } myFormatter;
 template<>
-void MyFormatter::format<int>(int v, char* out) {
-  snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, "OOPS%d!", v);
+void MyFormatter::Formatter<int>::format(int v, char* out) {
+  snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, "CUSTOM - %d!", v);
 }
 
 // define some variables
@@ -122,7 +118,7 @@ void setup() {
   streamHandler.addVariableUpdater('M', m);
   streamHandler.addVariableUpdater('N', n);
 
-  streamHandler.addTimedVariableReporter('Z', i, 1000)->setFormatter(&myFormatter);
+  streamHandler.addTimedVariableReporter('Z', i, 1000)->setFormatter(myFormatter);
   streamHandler.addTimedFunctionReporter(timeFunction, 750);
   // streamHandler.addOnChangeVariableReporter('#', analog);
 

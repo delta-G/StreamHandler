@@ -84,19 +84,19 @@ class VariableReporter : public StreamReporter {
 protected:
   char codeChar;
   T& var;
-  Formatter* formatter;
+  Formatter<T> formatter;
   void format(char* out) {
     out[0] = codeChar;
-    formatter->format<T>(var, out + 1);
+    formatter.format(var, out + 1);
   }
 
 public:
-VariableReporter* setFormatter(Formatter* f) {
+  VariableReporter* setFormatter(Formatter<T> f) {
     formatter = f;
     return this;
   }
   VariableReporter(char c, T& v)
-    : codeChar(c), var(v), formatter(&defaultFormatter) {}
+    : codeChar(c), var(v), formatter() {}
 };
 
 template<class T>

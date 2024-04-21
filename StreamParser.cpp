@@ -20,20 +20,18 @@ StreamHandler  --  Some automation for Stream objects
 
 #include "StreamParser.h"
 
-Parser defaultParser = Parser();
-Formatter defaultFormatter = Formatter();
 /*
 *
 *   Parser Commands
 *
 */
 template<>
-int Parser::parse<int>(char* str) {
+int Parser<int>::parse(char* str) {
   return atoi(str);
 }
 
 template<>
-float Parser::parse<float>(char* str) {
+float Parser<float>::parse(char* str) {
   return atof(str);
 }
 /*
@@ -42,12 +40,12 @@ float Parser::parse<float>(char* str) {
 *
 */
 template<>
-void __attribute__((weak)) Formatter::format<int>(int v, char* out) {
+void __attribute__((weak)) Formatter<int>::format(int v, char* out) {
   snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, "%d", v);
 }
 
 template<>
-void __attribute__((weak)) Formatter::format<float>(float v, char* out) {
+void __attribute__((weak)) Formatter<float>::format(float v, char* out) {
   char buf[16];
   dtostrf(v, 2, 2, buf);
   snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, "%s", buf);

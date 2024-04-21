@@ -24,21 +24,20 @@ StreamHandler  --  Some automation for Stream objects
 #include "Arduino.h"
 #include "StreamHandlerDefines.h"
 
+template<class T>
 class Parser {
 
 public:
-  template<class T>
-  T parse(char*);
+  virtual T parse(char*);
 };
 
+
+template<class T>
 class Formatter {
 
 public:
-  template<class T>
-  void format(T, char*);
+  virtual void format(T, char*);
 };
 
-extern Parser defaultParser;
-extern Formatter defaultFormatter;
 
 #endif
