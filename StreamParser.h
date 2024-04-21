@@ -61,58 +61,6 @@ public:
   virtual ~Formatter() {}
 };
 
-// template<>
-// class Formatter<int> {
-
-// public:
-//   const char* formStr;
-//   virtual void format(int, char*);
-//   Formatter(const char* f)
-//     : formStr(f) {}
-//   Formatter()
-//     : Formatter((const char*)"%d") {}
-//   virtual ~Formatter() {}
-// };
-
-// template<>
-// class Formatter<unsigned int> {
-
-// public:
-//   const char* formStr;
-//   virtual void format(unsigned int, char*);
-//   Formatter(const char* f)
-//     : formStr(f) {}
-//   Formatter()
-//     : Formatter((const char*)"%u") {}
-//   virtual ~Formatter() {}
-// };
-
-// template<>
-// class Formatter<long> {
-
-// public:
-//   const char* formStr;
-//   virtual void format(long, char*);
-//   Formatter(const char* f)
-//     : formStr(f) {}
-//   Formatter()
-//     : Formatter((const char*)"%ld") {}
-//   virtual ~Formatter() {}
-// };
-
-// template<>
-// class Formatter<unsigned long> {
-
-// public:
-//   const char* formStr;
-//   virtual void format(unsigned long, char*);
-//   Formatter(const char* f)
-//     : formStr(f) {}
-//   Formatter()
-//     : Formatter((const char*)"%lu") {}
-//   virtual ~Formatter() {}
-// };
-
 template<>
 class Formatter<float> {
 public:

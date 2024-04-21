@@ -53,7 +53,7 @@ const char* defaultUnsignedLongFormat = "%lu";
 
 template<>
 void __attribute__((weak)) Formatter<int>::format(int v, char* out) {
-  if(formStr == nullptr){
+  if (formStr == nullptr) {
     formStr = defaultIntFormat;
   }
   snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, formStr, v);
@@ -61,7 +61,7 @@ void __attribute__((weak)) Formatter<int>::format(int v, char* out) {
 
 template<>
 void __attribute__((weak)) Formatter<unsigned int>::format(unsigned int v, char* out) {
-  if(formStr == nullptr){
+  if (formStr == nullptr) {
     formStr = defaultUnsignedIntFormat;
   }
   snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, formStr, v);
@@ -69,7 +69,7 @@ void __attribute__((weak)) Formatter<unsigned int>::format(unsigned int v, char*
 
 template<>
 void __attribute__((weak)) Formatter<long>::format(long v, char* out) {
-  if(formStr == nullptr){
+  if (formStr == nullptr) {
     formStr = defaultLongFormat;
   }
   snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, formStr, v);
@@ -77,7 +77,7 @@ void __attribute__((weak)) Formatter<long>::format(long v, char* out) {
 
 template<>
 void __attribute__((weak)) Formatter<unsigned long>::format(unsigned long v, char* out) {
-  if(formStr == nullptr){
+  if (formStr == nullptr) {
     formStr = defaultUnsignedLongFormat;
   }
   snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, formStr, v);

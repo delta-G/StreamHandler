@@ -32,7 +32,7 @@ void Formatter<uint8_t>::format(uint8_t v, char* ret) {
 
 class MyCustomFormatter : public Formatter<int> {
   virtual void format(int, char*);
-} ;
+};
 
 void MyCustomFormatter::format(int v, char* out) {
   snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, "CUSTOM - %d!", v);
