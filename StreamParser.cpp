@@ -34,19 +34,34 @@ template<>
 float Parser<float>::parse(char* str) {
   return atof(str);
 }
+
+template<>
+double Parser<double>::parse(char* str) {
+  return atof(str);
+}
+
 /*
 *
 *   Formatter Commands
 *
 */
 
-
-
-void /*__attribute__((weak))*/ Formatter<int>::format(int v, char* out) {
+void __attribute__((weak)) Formatter<int>::format(int v, char* out) {
   snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, formStr, v);
 }
 
+void __attribute__((weak)) Formatter<unsigned int>::format(unsigned int v, char* out) {
+  snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, formStr, v);
+}
 
-void /*__attribute__((weak))*/ Formatter<float>::format(float v, char* out) {
+void __attribute__((weak)) Formatter<long>::format(long v, char* out) {
+  snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, formStr, v);
+}
+
+void __attribute__((weak)) Formatter<float>::format(float v, char* out) {
+  dtostrf(v, 2, decimals, out);
+}
+
+void __attribute__((weak)) Formatter<double>::format(double v, char* out) {
   dtostrf(v, 2, decimals, out);
 }
