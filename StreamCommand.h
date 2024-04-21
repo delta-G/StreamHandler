@@ -141,34 +141,40 @@ private:
   VariableUpdater();  // disallow default constructor
   void display(char*);
   bool echo;
-  Parser<T> parser;
-  Formatter<T> formatter;
+  Parser<T>* parser;
+  Formatter<T>* formatter;
 
 protected:
 
   virtual void handle(char* str, char* ret) {
-    var = parser.parse(str + 1);  // skip command char
+    var = parser->parse(str + 1);  // skip command char
     if (echo) {
       ret[0] = matchChar;
-      formatter.format(var, ret + 1);
+      formatter->format(var, ret + 1);
     }
   }
 
 public:
 
-  VariableUpdater* setParser(Parser<T> p) {
+  VariableUpdater* setParser(Parser<T>* p) {
+    delete parser;
     parser = p;
     return this;
   }
-  VariableUpdater* setFormatter(Formatter<T> f) {
+  VariableUpdater* setFormatter(Formatter<T>* f) {
+    delete formatter;
     formatter = f;
     return this;
   }
 
   VariableUpdater(char c, T& v, bool e)
-    : StreamCommand(c), var(v), echo(e), parser(), formatter(){};
+    : StreamCommand(c), var(v), echo(e), parser(new Parser<T>()), formatter(new Formatter<T>()){};
   VariableUpdater(char c, T& v)
     : VariableUpdater(c, v, DEFAULT_VU_ECHO){};
+  virtual ~VariableUpdater() {
+    delete parser;
+    delete formatter;
+  }
 };
 
 #endif  //STREAMCOMMAND_H

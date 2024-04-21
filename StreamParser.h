@@ -23,21 +23,62 @@ StreamHandler  --  Some automation for Stream objects
 
 #include "Arduino.h"
 #include "StreamHandlerDefines.h"
+/*
+*
+*   PARSER
+*
+*/
 
 template<class T>
 class Parser {
 
 public:
+  int base;
   virtual T parse(char*);
+  Parser(int b)
+    : base(b) {}
+  Parser()
+    : Parser(10) {}
+  virtual ~Parser() {}
 };
 
+/*
+*
+*   FORMATTER
+*
+*/
 
 template<class T>
 class Formatter {
 
 public:
   virtual void format(T, char*);
+  virtual ~Formatter() {}
 };
 
+template<>
+class Formatter<int> {
+
+public:
+  const char* formStr;
+  virtual void format(int, char*);
+  Formatter(const char* f)
+    : formStr(f) {}
+  Formatter()
+    : Formatter((const char*)"%d") {}
+  virtual ~Formatter() {}
+};
+
+template<>
+class Formatter<float> {
+public:
+  int decimals;
+  virtual void format(float, char*);
+  Formatter(int d)
+    : decimals(d) {}
+  Formatter()
+    : Formatter(2) {}
+  virtual ~Formatter() {}
+};
 
 #endif

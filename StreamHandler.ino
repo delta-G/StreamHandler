@@ -30,12 +30,17 @@ void Formatter<uint8_t>::format(uint8_t v, char* ret) {
   snprintf(ret, STREAM_HANDLER_BUFFER_SIZE, "%u", v);
 }
 
-class MyFormatter : public Formatter<int> {
-} myFormatter;
-template<>
-void MyFormatter::Formatter<int>::format(int v, char* out) {
+class MyCustomFormatter : public Formatter<int> {
+  virtual void format(int, char*);
+} ;
+
+void MyCustomFormatter::format(int v, char* out) {
   snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, "CUSTOM - %d!", v);
 }
+
+
+// Parser<int> hexParser = Parser<int>(16);
+
 
 // define some variables
 int i = 2;
@@ -94,7 +99,7 @@ void rawFunc(char* str, char* ret) {
   memcpy(ret + 1, str, str[1] + 2);
   ret[str[1] + 3] = '>';
 }
-// test String   <A_Hello><I42><A><D><M3.141592><D><E><N127><E>
+// test String   <A_Hello><I42><A><D><M3.141592><D><E><N127><E><C><KAE><C>
 //  <Q 12345678901234567890123456789012>>>>>
 // create a StreamHandler and connect to Serial
 StreamHandler streamHandler(&Serial, &Serial);
@@ -113,12 +118,12 @@ void setup() {
 
   streamHandler.addVariableUpdater('I', i);
   streamHandler.addVariableUpdater('J', j, false);  // doesn't send return back
-  streamHandler.addVariableUpdater('K', k);
+  streamHandler.addVariableUpdater('K', k)->setParser(new Parser<int>(HEX));
 
   streamHandler.addVariableUpdater('M', m);
   streamHandler.addVariableUpdater('N', n);
 
-  streamHandler.addTimedVariableReporter('Z', i, 1000)->setFormatter(myFormatter);
+  streamHandler.addTimedVariableReporter('Z', k, 1000)->setFormatter(new MyCustomFormatter());
   streamHandler.addTimedFunctionReporter(timeFunction, 750);
   // streamHandler.addOnChangeVariableReporter('#', analog);
 

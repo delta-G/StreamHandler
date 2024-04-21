@@ -27,7 +27,7 @@ StreamHandler  --  Some automation for Stream objects
 */
 template<>
 int Parser<int>::parse(char* str) {
-  return atoi(str);
+  return strtol(str, NULL, base);
 }
 
 template<>
@@ -39,14 +39,14 @@ float Parser<float>::parse(char* str) {
 *   Formatter Commands
 *
 */
-template<>
-void __attribute__((weak)) Formatter<int>::format(int v, char* out) {
-  snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, "%d", v);
+
+
+
+void /*__attribute__((weak))*/ Formatter<int>::format(int v, char* out) {
+  snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, formStr, v);
 }
 
-template<>
-void __attribute__((weak)) Formatter<float>::format(float v, char* out) {
-  char buf[16];
-  dtostrf(v, 2, 2, buf);
-  snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, "%s", buf);
+
+void /*__attribute__((weak))*/ Formatter<float>::format(float v, char* out) {
+  dtostrf(v, 2, decimals, out);
 }
