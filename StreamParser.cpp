@@ -50,6 +50,8 @@ const char* defaultIntFormat = "%d";
 const char* defaultUnsignedIntFormat = "%u";
 const char* defaultLongFormat = "%ld";
 const char* defaultUnsignedLongFormat = "%lu";
+const char* defaultFloatFormat = "%-1.2f";
+const char* defaultDoubleFormat = "%-1.2f";
 
 template<>
 void __attribute__((weak)) Formatter<int>::format(int v, char* out) {
@@ -83,10 +85,26 @@ void __attribute__((weak)) Formatter<unsigned long>::format(unsigned long v, cha
   snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, formStr, v);
 }
 
+
 void __attribute__((weak)) Formatter<float>::format(float v, char* out) {
+#if defined NO_FLOAT_F
   dtostrf(v, 2, decimals, out);
+#else
+  if (formStr == nullptr) {
+    snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, "%-1.*f", decimals, v);
+  }
+  snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, formStr, v);
+#endif
 }
 
+
 void __attribute__((weak)) Formatter<double>::format(double v, char* out) {
+#if defined NO_FLOAT_F
   dtostrf(v, 2, decimals, out);
+#else
+  if (formStr == nullptr) {
+    snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, "%-1.*f", decimals, v);
+  }
+  snprintf(out, STREAM_HANDLER_MAX_LENGTH - 2, formStr, v);
+#endif
 }

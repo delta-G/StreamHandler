@@ -21,6 +21,10 @@ StreamHandler  --  Some automation for Stream objects
 #ifndef STREAM_PARSER_H
 #define STREAM_PARSER_H
 
+#if defined ARDUINO_ARCH_AVR
+#define NO_FLOAT_F
+#endif
+
 #include "Arduino.h"
 #include "StreamHandlerDefines.h"
 /*
@@ -61,13 +65,18 @@ public:
   virtual ~Formatter() {}
 };
 
+
+
 template<>
 class Formatter<float> {
 public:
+  const char* formStr;
   int decimals;
   virtual void format(float, char*);
+  Formatter(char* f)
+    :  formStr(f), decimals(0) {}
   Formatter(int d)
-    : decimals(d) {}
+    : formStr(nullptr), decimals(d) {}
   Formatter()
     : Formatter(2) {}
   virtual ~Formatter() {}
@@ -76,10 +85,13 @@ public:
 template<>
 class Formatter<double> {
 public:
+  const char* formStr;
   int decimals;
   virtual void format(double, char*);
+  Formatter(char* f)
+    :  formStr(f), decimals(0) {}
   Formatter(int d)
-    : decimals(d) {}
+    : formStr(nullptr), decimals(d) {}
   Formatter()
     : Formatter(2) {}
   virtual ~Formatter() {}
