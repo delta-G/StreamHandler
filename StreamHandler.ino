@@ -20,7 +20,7 @@ StreamHandler  --  Some automation for Stream objects
 
 #include "StreamHandler.h"
 
-// parses an uint8_t from the string
+// parser and formatter for a type not defined in the library
 template<>
 uint8_t Parser<uint8_t>::parse(char* str) {
   return atoi(str + 1);  // skip command character
@@ -30,6 +30,7 @@ void Formatter<uint8_t>::format(uint8_t v, char* ret) {
   snprintf(ret, STREAM_HANDLER_BUFFER_SIZE, "%u", v);
 }
 
+// Define a custom formatter
 class MyCustomFormatter : public Formatter<unsigned int> {
   virtual void format(unsigned int, char*);
 };
@@ -39,10 +40,7 @@ void MyCustomFormatter::format(unsigned int v, char* out) {
 }
 
 
-// Parser<int> hexParser = Parser<int>(16);
-
-
-// define some variables
+// define some variables to use in the demo
 int i = 2;
 long j = 3;
 unsigned int k = 4;
@@ -51,7 +49,9 @@ uint8_t n = 6;
 
 int analog;
 
-//define some functions to print them
+//define some functions to call
+// a function that will respond back to the stream takes two char*
+// one for the input string and one for the return string. 
 void aFunction(char* str, char* ret) {
   Serial.print("\n ** A function - ");
   Serial.println(str);
@@ -62,6 +62,8 @@ void bFunction(char* str, char* ret) {
   Serial.println(str);
   snprintf(ret, STREAM_HANDLER_BUFFER_SIZE, "matched 'B' printed j %ld", j);
 }
+
+// Functions that don't respond just take the input string
 void cFunction(char* str) {
   Serial.print("\n ** C function - ");
   Serial.println(str);
@@ -83,15 +85,19 @@ void eFunction(char* str) {
   Serial.println(n);
 }
 
+// Timed responders take a char* to write their message to
 void timeFunction(char* out) {
   snprintf(out, STREAM_HANDLER_MAX_LENGTH, "Time is %lu\n", millis());
 }
 
+// You can set a default command for when no other matches
 void def(char* str, char* ret) {
   strncpy(ret, "Default Handler", STREAM_HANDLER_MAX_LENGTH);
   Serial.println(str);
 }
 
+// Commands and Reporters can be set to 
+// take in and / or respond with raw bytes
 void rawFunc(char* str, char* ret) {
   Serial.println("Raw Func Called!");
   Serial.println(str);
@@ -99,8 +105,9 @@ void rawFunc(char* str, char* ret) {
   memcpy(ret + 1, str, str[1] + 2);
   ret[str[1] + 3] = '>';
 }
-// test String   <A_Hello><I42><A><D><M3.141592><D><E><N127><E><C><KAE><C>
-//  <Q 12345678901234567890123456789012>>>>>
+
+
+
 // create a StreamHandler and connect to Serial
 StreamHandler streamHandler(&Serial, &Serial);
 
@@ -116,23 +123,37 @@ void setup() {
   streamHandler.addFunctionCommand('D', dFunction);
   streamHandler.addFunctionCommand('E', eFunction);
 
+  // Variable Updaters parse the input for values and update the appropriate variables
   streamHandler.addVariableUpdater('I', i);
-  streamHandler.addVariableUpdater('J', j);  // doesn't send return back
-  streamHandler.addVariableUpdater('K', k)->setParser(new Parser<unsigned int>(HEX));
+  streamHandler.addVariableUpdater('J', j);  
+  // You can set parsing options or even build custom parsers
+  streamHandler.addVariableUpdater('K', k)->setParser(new Parser<unsigned int>(HEX));  // This one takes input in hexadecimal. 
 
   streamHandler.addVariableUpdater('M', m);
   streamHandler.addVariableUpdater('N', n);
 
+  // Send a variable value at regular intervals       // set up custom formatters to customize data
   streamHandler.addTimedVariableReporter('Z', k, 1000)->setFormatter(new MyCustomFormatter());
-  streamHandler.addTimedFunctionReporter(timeFunction, 750);
-  // streamHandler.addOnChangeVariableReporter('#', analog);
 
+  // Call a function at regalar intervals and send a response
+  streamHandler.addTimedFunctionReporter(timeFunction, 750);
+
+  // Send a variable value whenever it changes. 
+  streamHandler.addOnChangeVariableReporter('#', analog);     // this one spams a lot, comment it out to play with others. 
+
+  // Set commands to take and give raw data 
   streamHandler.addReturnCommand('Q', rawFunc)->setRawIn()->setRawOut();
 
+  // Set a default handler for unmatched commands. 
   streamHandler.setDefaultHandler(def);
 }
 
+
 void loop() {
   streamHandler.run();  // run the stream handler
-  analog = analogRead(0);
+  analog = analogRead(0) / 10;  // divide by 10 so it doesn't bounce so much
 }
+
+
+// test String   <A_Hello><I42><A><D><M3.141592><D><E><N127><E><C><KAE><C>
+// raw test string <Q 12345678901234567890123456789012>>>>>
