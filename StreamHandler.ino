@@ -111,6 +111,9 @@ void rawFunc(char* str, char* ret) {
 // create a StreamHandler and connect to Serial
 StreamHandler streamHandler(&Serial, &Serial);
 
+
+FunctionCommand fc('*', eFunction);
+
 void setup() {
   Serial.begin(115200);
   delay(1000);
