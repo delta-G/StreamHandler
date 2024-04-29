@@ -127,10 +127,12 @@ template<class T>
 class OnChangeVariableReporter : public VariableReporter<T> {
 private:
   T last;
+  bool firstRun = true;
 
 protected:
   virtual void handle(char* out) {
-    if (VariableReporter<T>::var != last) {
+    if (firstRun || (VariableReporter<T>::var != last)) {
+      firstRun = false;
       last = VariableReporter<T>::var;
       VariableReporter<T>::format(out);
     }

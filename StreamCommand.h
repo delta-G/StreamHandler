@@ -147,8 +147,11 @@ private:
 protected:
 
   virtual void handle(char* str, char* ret) {
-    var = parser->parse(str + 1);  // skip command char
-    if (echo) {
+    bool empty = (strlen(str + 1) == 0);
+    if(!empty){
+      var = parser->parse(str + 1);  // skip command char
+    }
+    if (echo || empty) {
       ret[0] = matchChar;
       formatter->format(var, ret + 1);
     }
