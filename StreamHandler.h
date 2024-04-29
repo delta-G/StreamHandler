@@ -44,7 +44,7 @@ private:
   int index;
 
   Stream* in;
-  Stream* out;
+  Print* out;
   char sop;
   char eop;
 
@@ -65,11 +65,11 @@ private:
   void sendOutBuffer();
 
 public:
-  StreamHandler(Stream* aIn, Stream* aOut, char aSop, char aEop)
+  StreamHandler(Stream* aIn, Print* aOut, char aSop, char aEop)
     : index(0), in(aIn), out(aOut), sop(aSop), eop(aEop){};
   StreamHandler(Stream* aIn, char aSop, char aEop)
     : StreamHandler(aIn, nullptr, aSop, aEop){};
-  StreamHandler(Stream* aIn, Stream* aOut)
+  StreamHandler(Stream* aIn, Print* aOut)
     : StreamHandler(aIn, aOut, DEFAULT_SOP, DEFAULT_EOP){};
   StreamHandler(Stream* aIn)
     : StreamHandler(aIn, nullptr){};
